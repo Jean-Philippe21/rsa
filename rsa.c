@@ -167,9 +167,10 @@ uint64_t rsa_Hastad_attack(uint64_t *tab_ciphered, uint64_t *tab_n, uint64_t tab
         result = result%N;
         printf("\nVoici M^%ld = %ld",k,result);
     //Processing of M
-       clear_msg = pow(result,(1/(double)k)); 
-       printf("\nLe message en clair = %Lf\n",powl(result,(1/(double)k)));
-
+       clear_msg = powl(result,(1/(double)k)); 
+       //printf("\nLe message en clair = %Lf\n",powl(result,(1/(double)k)));
+       printf("\nLe message en clair = %ld\n",clear_msg);
+       
     return clear_msg;
 }
 
