@@ -136,35 +136,39 @@ uint64_t rsa_common_modulus_attack(uint64_t ciphered1, rsa_public_key_t k_pub1,
 uint64_t rsa_Hastad_attack(uint64_t *tab_ciphered, uint64_t *tab_n, uint64_t tab_size)
 {
     uint64_t clear_msg = 0, N=1, tab_u[4]={0}, result=0, k = 3;
-    uint64_t gcd=0; int64_t u=1; int64_t v=0;
+    uint64_t gcd=0; int64_t u=1; int64_t v=0, temp=0;
     for (uint64_t i = 0; i < tab_size; i++)
     {
         N = N*tab_n[i];
     }
+    printf("\nN = %ld",N);
     for (uint64_t i = 0; i < tab_size; i++)
     {
         rsa_tbox_extended_euclidian(&gcd,&u,&v,(N/tab_n[i]),tab_n[i]);
-        if (u<0 &&  v<0)
+        if ((u<0 &&  v<0) )
         {
             u = (1- (tab_n[i]*v))/(N/tab_n[i]);
         }
-        
+        if(u<0 && v>0 ){
+            u = (1- (tab_n[i]*v));
+            temp = (N/tab_n[i]);
+
+            u = u/temp;
+        }
         tab_u[i] = u;
-        //printf("\n u = %ld et v = %ld et div = %ld",u,v,(N/tab_n[i]));
     }
     //Processing of M^3
-        for (uint64_t i = 0; i < k; i++)
+        for (uint64_t i = 0; i < tab_size; i++)
         {
             result += tab_ciphered[i]*tab_u[i]*(N/tab_n[i]);
             
         }
         //printf("\nresult = %ld et N=%ld",result,N);
-        result = N%result;
+        result = result%N;
         printf("\nVoici M^%ld = %ld",k,result);
-
-    //Prpcessing of M
+    //Processing of M
        clear_msg = pow(result,(1/(double)k)); 
-       printf("\nLe message en clair = %Lf",powl(result,(1/(double)k)));
+       printf("\nLe message en clair = %Lf\n",powl(result,(1/(double)k)));
 
     return clear_msg;
 }
